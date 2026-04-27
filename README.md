@@ -40,38 +40,38 @@ Sehir bazli, anlik hava durumu gosteren modern bir web uygulamasi. OpenWeather A
 
 ```
 weather/
-??? public/
-?   ??? backgrounds/          # AI ile uretilmis hava durumu gorselleri
-?   ?   ??? clear.jpg
-?   ?   ??? clouds.jpg
-?   ?   ??? rain.jpg
-?   ?   ??? snow.jpg
-?   ?   ??? thunder.jpg
-?   ?   ??? mist.jpg
-?   ??? screenshot.png
-??? src/
-?   ??? components/
-?   ?   ??? ui/               # shadcn/ui bilesenleri
-?   ?   ?   ??? button.tsx
-?   ?   ?   ??? input.tsx
-?   ?   ?   ??? card.tsx
-?   ?   ?   ??? badge.tsx
-?   ?   ??? background-shell.tsx  # Arka plan + overlay
-?   ?   ??? search-form.tsx       # Sehir arama
-?   ?   ??? status-state.tsx      # Loading / error / idle durumlari
-?   ?   ??? weather-card.tsx      # Hava durumu karti
-?   ?   ??? weather-details.tsx   # Detay metrikleri
-?   ??? lib/
-?   ?   ??? api.ts            # OpenWeather API cagrilari
-?   ?   ??? weather.ts        # Tip tanimlari + yardimci fonksiyonlar
-?   ?   ??? utils.ts          # cn() yardimci fonksiyonu
-?   ??? App.tsx               # Ana uygulama bileseni
-?   ??? main.tsx              # Giris noktasi
-?   ??? index.css             # Tailwind direktifleri + tema degiskenleri
-??? .env.example
-??? tailwind.config.ts
-??? vite.config.ts
-??? package.json
+  public/
+    backgrounds/             # AI ile uretilmis hava durumu gorselleri
+      clear.jpg
+      clouds.jpg
+      rain.jpg
+      snow.jpg
+      thunder.jpg
+      mist.jpg
+    screenshot.png
+  src/
+    components/
+      ui/                    # shadcn/ui bilesenleri
+        button.tsx
+        input.tsx
+        card.tsx
+        badge.tsx
+      background-shell.tsx   # Arka plan + overlay
+      search-form.tsx        # Sehir arama
+      status-state.tsx       # Loading / error / idle durumlari
+      weather-card.tsx       # Hava durumu karti
+      weather-details.tsx    # Detay metrikleri
+    lib/
+      api.ts                 # OpenWeather API cagrilari
+      weather.ts             # Tip tanimlari + yardimci fonksiyonlar
+      utils.ts               # cn() yardimci fonksiyonu
+    App.tsx                  # Ana uygulama bileseni
+    main.tsx                 # Giris noktasi
+    index.css                # Tailwind direktifleri + tema degiskenleri
+  .env.example
+  tailwind.config.ts
+  vite.config.ts
+  package.json
 ```
 
 ---
