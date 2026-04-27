@@ -1,28 +1,28 @@
-# �r�n Gereksinim Belgesi (PRD)
+# Urun Gereksinim Belgesi (PRD)
 
-**Proje Ad?:** Modern Weather App  
-**Tip:** Web Uygulamas?  
+**Proje Adi:** Modern Weather App  
+**Tip:** Web Uygulamasi  
 **Versiyon:** 1.0.0
 
 ---
 
-## 1. Ama�
+## 1. Amac
 
-Kullan?c?n?n d�nyan?n herhangi bir ?ehri i�in anl?k hava durumu bilgisini, modern ve g�rsel olarak zengin bir aray�zde g�rebilece?i bir web uygulamas? geli?tirmek.
+Kullanicinin dunyanin herhangi bir sehri icin anlik hava durumu bilgisini, modern ve gorsel olarak zengin bir arayuzde gorebilecegi bir web uygulamasi gelistirmek.
 
-Proje ayn? zamanda �?renim ama�l?:
+Proje ayni zamanda ogrenim amacli:
 
-- Modern frontend ekosistemini (React, TypeScript, Tailwind, shadcn/ui) uygulamal? �?renmek
-- ���nc� taraf API entegrasyonu deneyimi kazanmak
-- Git versiyon kontrol� ve Vercel deploy s�re�lerini deneyimlemek
-- AI ile g�rsel �retim teknolojisini bir projede kullanmak
+- Modern frontend ekosistemini (React, TypeScript, Tailwind, shadcn/ui) uygulamali ogrenmek
+- Ucuncu taraf API entegrasyonu deneyimi kazanmak
+- Git versiyon kontrolu ve Vercel deploy sureclerini deneyimlemek
+- AI ile gorsel uretim teknolojisini bir projede kullanmak
 
 ---
 
 ## 2. Hedef Kitle
 
-- H?zl? ?ekilde bir ?ehrin hava durumunu �?renmek isteyen son kullan?c?lar
-- Frontend geli?tirme s�re�lerini incelemek isteyen geli?tiriciler
+- Hizli sekilde bir sehrin hava durumunu ogrenmek isteyen son kullanicilar
+- Frontend gelistirme sureclerini incelemek isteyen gelistiriciler
 
 ---
 
@@ -30,176 +30,171 @@ Proje ayn? zamanda �?renim ama�l?:
 
 ### Birincil hedefler
 
-1. Kullan?c? bir ?ehir ad? girip 3 saniye i�inde hava durumu bilgisini g�rebilmeli
-2. Aray�z responsive olmal? (mobil, tablet, masa�st�)
-3. Hata durumlar?nda (ge�ersiz ?ehir, a? hatas?) kullan?c?ya a�?k mesajlar verilmeli
-4. Hava durumuna g�re dinamik g�rseller ile kullan?c? deneyimi zenginle?tirilmeli
+1. Kullanici bir sehir adi girip 3 saniye icinde hava durumu bilgisini gorebilmeli
+2. Arayuz responsive olmali (mobil, tablet, masaustu)
+3. Hata durumlarinda (gecersiz sehir, ag hatasi) kullaniciya acik mesajlar verilmeli
+4. Hava durumuna gore dinamik gorseller ile kullanici deneyimi zenginlestirilmeli
 
-### ?kincil hedefler
+### Ikincil hedefler
 
-1. Kod kalitesi: Bile?en bazl?, tip g�venli, s�rd�r�lebilir mimari
+1. Kod kalitesi: Bilesen bazli, tip guvenli, surdurulebilir mimari
 2. Performans: Lighthouse performans skoru 90+
-3. Eri?ilebilirlik: Klavye ile gezinme, screen reader uyumlulu?u
+3. Erisilebilirlik: Klavye ile gezinme, screen reader uyumlulugu
 
 ---
 
-## 4. �zellikler (Functional Requirements)
+## 4. Ozellikler (Functional Requirements)
 
-### F1 � ?ehir Arama
+### F1 - Sehir Arama
+- Kullanici bir input alanina sehir adi yazabilir
+- "Ara" butonuna tiklayarak veya Enter'a basarak arama tetiklenir
+- Bos arama onlenir (input bossa istek gonderilmez)
 
-- Kullan?c? bir input alan?na ?ehir ad? yazabilir
-- "Ara" butonuna t?klayarak veya Enter'a basarak arama tetiklenir
-- Bo? arama �nlenir (input bo?sa istek g�nderilmez)
-
-### F2 � Hava Durumu G�r�nt�leme
-
-- Bulunan ?ehir i�in a?a??daki bilgiler g�sterilir:
-  - ?ehir ad? ve �lke kodu
-  - S?cakl?k (�C)
-  - Hissedilen s?cakl?k (�C)
-  - Hava durumu a�?klamas? (T�rk�e)
-  - Nem oran? (%)
-  - R�zgar h?z? (km/h)
+### F2 - Hava Durumu Goruntuleme
+- Bulunan sehir icin asagidaki bilgiler gosterilir:
+  - Sehir adi ve ulke kodu
+  - Sicaklik (C)
+  - Hissedilen sicaklik (C)
+  - Hava durumu aciklamasi (Turkce)
+  - Nem orani (%)
+  - Ruzgar hizi (km/h)
   - Hava durumu ikonu
 
-### F3 � Dinamik Arka Planlar
+### F3 - Dinamik Arka Planlar
+- Hava durumu ana kosuluna gore arka plan gorseli degisir:
+  - **Clear** -> Gunesli kirlar
+  - **Clouds** -> Parcali bulutlu manzara
+  - **Rain / Drizzle** -> Yagmurlu sokak
+  - **Snow** -> Karli orman
+  - **Thunderstorm** -> Simsekli gokyuzu
+  - **Mist / Fog / Haze** -> Sisli orman
+- Gorseller AI ile uretilmistir (Nano Banana yaklasimi)
+- Gorsel degisiminde 0.7 saniyelik yumusak fade-in animasyonu uygulanir
 
-- Hava durumu ana ko?uluna g�re arka plan g�rseli de?i?ir:
-  - **Clear** ? G�ne?li k?rlar
-  - **Clouds** ? Par�al? bulutlu manzara
-  - **Rain / Drizzle** ? Ya?murlu sokak
-  - **Snow** ? Karl? orman
-  - **Thunderstorm** ? ?im?ekli g�ky�z�
-  - **Mist / Fog / Haze** ? Sisli orman
-- G�rseller AI ile �retilmi?tir (Nano Banana yakla??m?)
-- G�rsel de?i?iminde 0.7 saniyelik yumu?ak fade-in animasyonu uygulan?r
-
-### F4 � Durum Y�netimi
-
-- **Idle:** Hi�bir arama yap?lmad???nda kar??lama mesaj?
-- **Loading:** Arama s?ras?nda "Aran?yor..." g�stergesi
-- **Error:** Hata durumunda anla??l?r mesaj (�rn: "?ehir bulunamad?")
-- **Success:** Veri ba?ar?yla geldi?inde hava durumu kart?
+### F4 - Durum Yonetimi
+- **Idle:** Hicbir arama yapilmadiginda karsilama mesaji
+- **Loading:** Arama sirasinda "Araniyor..." gostergesi
+- **Error:** Hata durumunda anlasilir mesaj (orn: "Sehir bulunamadi")
+- **Success:** Veri basariyla geldiginde hava durumu karti
 
 ---
 
 ## 5. Functional Olmayan Gereksinimler (Non-Functional)
 
-### N1 � Performans
+### N1 - Performans
+- Ilk yuklenme suresi < 2 saniye (Vercel CDN uzerinde)
+- API yanit suresi < 1 saniye (OpenWeather)
+- Gorsel boyutlari optimize edilmis (jpg formati)
 
-- ?lk y�klenme s�resi < 2 saniye (Vercel CDN �zerinde)
-- API yan?t s�resi < 1 saniye (OpenWeather)
-- G�rsel boyutlar? optimize edilmi? (jpg format?)
+### N2 - Responsive Tasarim
+- 320px (kucuk telefon) ile 1920px (genis masaustu) arasinda sorunsuz calismali
+- Mobile-first yaklasimi, Tailwind breakpoint'leri (`sm:`, `md:`)
 
-### N2 � Responsive Tasar?m
-
-- 320px (k���k telefon) ile 1920px (geni? masa�st�) aras?nda sorunsuz �al??mal?
-- Mobile-first yakla??m?, Tailwind breakpoint'leri (`sm:`, `md:`)
-
-### N3 � Eri?ilebilirlik
-
+### N3 - Erisilebilirlik
 - Semantic HTML (`<header>`, `<main>`, `<form>`)
-- ARIA etiketleri (input i�in `aria-label`, dekoratif �?eler i�in `aria-hidden`)
+- ARIA etiketleri (input icin `aria-label`, dekoratif ogeler icin `aria-hidden`)
 - Klavyeyle tam gezinilebilirlik
-- `prefers-reduced-motion` deste?i
+- `prefers-reduced-motion` destegi
 
-### N4 � G�venlik
+### N4 - Guvenlik
+- API key'ler kodda hardcode edilmeyecek, ortam degiskeni olarak saklanacak
+- `.env` dosyasi `.gitignore`'a ekli
+- HTTPS uzerinden API istekleri
 
-- API key'ler kodda hardcode edilmeyecek, ortam de?i?keni olarak saklanacak
-- `.env` dosyas? `.gitignore`'a ekli
-- HTTPS �zerinden API istekleri
-
-### N5 � S�rd�r�lebilirlik
-
-- TypeScript ile tip g�venli?i
-- Bile?en bazl? mimari (her bile?en tek sorumluluk)
-- Veri katman? ile UI katman?n?n ayr?lmas?
-- Tutarl? klas�r yap?s?
+### N5 - Surdurulebilirlik
+- TypeScript ile tip guvenligi
+- Bilesen bazli mimari (her bilesen tek sorumluluk)
+- Veri katmani ile UI katmaninin ayrilmasi
+- Tutarli klasor yapisi
 
 ---
 
-## 6. Teknoloji Y???n?
+## 6. Teknoloji Yigini
 
-
-| Katman             | Se�im               | Gerek�e                                   |
-| ------------------ | ------------------- | ----------------------------------------- |
-| Frontend Framework | React 18            | Pop�ler, geni? ekosistem, ment�r iste?i   |
-| Dil                | TypeScript          | Tip g�venli?i, IDE deste?i, hata yakalama |
-| Build Tool         | Vite                | H?zl? dev server, modern ESM bazl?        |
-| Stil               | Tailwind CSS        | Utility-first, h?zl? geli?tirme           |
-| UI Bile?enleri     | shadcn/ui           | Modern, accessible, copy-paste yakla??m?  |
-| ?konlar            | lucide-react        | Tutarl?, hafif                            |
-| API                | OpenWeather         | �cretsiz tier, geni? ?ehir kapsam?        |
-| G�rsel �retimi     | AI image generation | Ment�r iste?i (Nano Banana yakla??m?)     |
-| Hosting            | Vercel              | Otomatik deploy, �cretsiz tier, CDN       |
-| Versiyon Kontrol   | Git + GitHub        | Standart                                  |
-
+| Katman | Secim | Gerekce |
+|---|---|---|
+| Frontend Framework | React 18 | Populer, genis ekosistem, mentor istegi |
+| Dil | TypeScript | Tip guvenligi, IDE destegi, hata yakalama |
+| Build Tool | Vite | Hizli dev server, modern ESM bazli |
+| Stil | Tailwind CSS | Utility-first, hizli gelistirme |
+| UI Bilesenleri | shadcn/ui | Modern, accessible, copy-paste yaklasimi |
+| Ikonlar | lucide-react | Tutarli, hafif |
+| API | OpenWeather | Ucretsiz tier, genis sehir kapsami |
+| Gorsel Uretimi | AI image generation | Mentor istegi (Nano Banana yaklasimi) |
+| Hosting | Vercel | Otomatik deploy, ucretsiz tier, CDN |
+| Versiyon Kontrol | Git + GitHub | Standart |
 
 ---
 
-## 7. Mimari Genel Bak??
+## 7. Mimari Genel Bakis
 
 ```
-[ Kullan?c? ]
-     ?
-[ React UI ]  ?  Tailwind + shadcn/ui
-     ?
-[ State Y�netimi ]  ?  useState (App.tsx)
-     ?
-[ API Katman? ]  ?  src/lib/api.ts
-     ?
+[ Kullanici ]
+     |
+     v
+[ React UI ]  <-  Tailwind + shadcn/ui
+     |
+     v
+[ State Yonetimi ]  <-  useState (App.tsx)
+     |
+     v
+[ API Katmani ]  <-  src/lib/api.ts
+     |
+     v
 [ OpenWeather API ]
-     ?
-[ Veri Normalizasyonu ]  ?  src/lib/weather.ts
-     ?
-[ UI Render ]  ?  WeatherCard + BackgroundShell
+     |
+     v
+[ Veri Normalizasyonu ]  <-  src/lib/weather.ts
+     |
+     v
+[ UI Render ]  <-  WeatherCard + BackgroundShell
 ```
 
 ### Katmanlar
 
-1. **UI Katman?** (`src/components/`) � Sadece g�rsel render, business logic yok
-2. **Veri Katman?** (`src/lib/`) � API �a?r?lar?, tip tan?mlar?, normalizasyon
-3. **State Katman?** (`App.tsx`) � Uygulaman?n tek state kayna?? (single source of truth)
+1. **UI Katmani** (`src/components/`) - Sadece gorsel render, business logic yok
+2. **Veri Katmani** (`src/lib/`) - API cagrilari, tip tanimlari, normalizasyon
+3. **State Katmani** (`App.tsx`) - Uygulamanin tek state kaynagi (single source of truth)
 
 ---
 
-## 8. Ba?ar? Kriterleri
+## 8. Basari Kriterleri
 
-- Kullan?c? bir ?ehir aramas? yap?p hava durumunu g�rebiliyor
-- Sonu� ekran? t�m gerekli verileri i�eriyor
-- Hata durumlar?nda kullan?c? dostu mesaj g�steriliyor
-- Mobil ve masa�st�nde responsive �al???yor
-- Hava durumuna g�re arka plan de?i?iyor
-- Kod GitHub'a y�klendi
-- Vercel'de production'a deploy edildi
-- HTTPS �zerinden eri?ilebilir
-
----
-
-## 9. Olas? Geli?tirmeler (Roadmap)
-
-?leride eklenebilecek �zellikler (mevcut s�r�mde yer alm?yor):
-
-- 5 g�nl�k tahmin (forecast)
-- Saatlik hava durumu grafi?i
-- Geolocation API ile otomatik mevcut konum
-- S?cakl?k birimi se�imi (�C / �F)
-- �oklu dil deste?i (i18n)
-- Favori ?ehir kaydetme (localStorage)
-- Hava kalitesi indeksi (AQI)
-- PWA deste?i (offline �al??ma)
+- [x] Kullanici bir sehir aramasi yapip hava durumunu gorebiliyor
+- [x] Sonuc ekrani tum gerekli verileri iceriyor
+- [x] Hata durumlarinda kullanici dostu mesaj gosteriliyor
+- [x] Mobil ve masaustunde responsive calisiyor
+- [x] Hava durumuna gore arka plan degisiyor
+- [x] Kod GitHub'a yuklendi
+- [x] Vercel'de production'a deploy edildi
+- [x] HTTPS uzerinden erisilebilir
 
 ---
 
-## 10. Kullan?c? Hikayeleri
+## 9. Olasi Gelistirmeler (Roadmap)
 
-> **Kullan?c? 1 (Yolcu):** "Yar?n ?stanbul'a gidiyorum. Ya?mur ya?acak m?, yoksa ?emsiye gerekmiyor mu, h?zl?ca �?renmek istiyorum."  
-> ? ?ehir arar, sonucu g�r�r, karar?n? verir.
+Ileride eklenebilecek ozellikler (mevcut surumde yer almiyor):
 
-> **Kullan?c? 2 (Geli?tirici):** "Yeni bir frontend projesi ba?lataca??m. Bu projeyi inceleyerek modern stack nas?l kuruluyor g�rmek istiyorum."  
-> ? GitHub'da kodu inceler, README'den teknik detaylar? �?renir.
+- [ ] 5 gunluk tahmin (forecast)
+- [ ] Saatlik hava durumu grafigi
+- [ ] Geolocation API ile otomatik mevcut konum
+- [ ] Sicaklik birimi secimi (C / F)
+- [ ] Coklu dil destegi (i18n)
+- [ ] Favori sehir kaydetme (localStorage)
+- [ ] Hava kalitesi indeksi (AQI)
+- [ ] PWA destegi (offline calisma)
 
 ---
 
-**Dok�man Sahibi:** [@znpdilek](https://github.com/znpdilek)  
-**Son G�ncelleme:** 2026-04-27
+## 10. Kullanici Hikayeleri
+
+> **Kullanici 1 (Yolcu):** "Yarin Istanbul'a gidiyorum. Yagmur yagacak mi, yoksa semsiye gerekmiyor mu, hizlica ogrenmek istiyorum."  
+> -> Sehir arar, sonucu gorur, kararini verir.
+
+> **Kullanici 2 (Gelistirici):** "Yeni bir frontend projesi baslatacagim. Bu projeyi inceleyerek modern stack nasil kuruluyor gormek istiyorum."  
+> -> GitHub'da kodu inceler, README'den teknik detaylari ogrenir.
+
+---
+
+**Dokuman Sahibi:** [@znpdilek](https://github.com/znpdilek)  
+**Son Guncelleme:** 2026-04-27

@@ -1,47 +1,47 @@
 # Modern Weather App
 
-?ehir bazl?, anl?k hava durumu gösteren modern bir web uygulamas?. OpenWeather API'den canl? veri çeker, hava ko?ullar?na göre AI ile üretilmi? arka plan görselleri kullan?r.
+Sehir bazli, anlik hava durumu gosteren modern bir web uygulamasi. OpenWeather API'den canli veri ceker, hava kosullarina gore AI ile uretilmis arka plan gorselleri kullanir.
 
-?? **Canl? demo:** [weather-app-iota-eight-56.vercel.app](https://weather-app-iota-eight-56.vercel.app)
+**Canli demo:** [weather-app-iota-eight-56.vercel.app](https://weather-app-iota-eight-56.vercel.app)
 
 ![Modern Weather App](public/screenshot.png)
 
 ---
 
-## Özellikler
+## Ozellikler
 
-- ?? **?ehir aramas?** — Dünyan?n herhangi bir ?ehri için anl?k hava durumu
-- ??? **Detayl? veri** — S?cakl?k, hissedilen, nem, rüzgar h?z?
-- ?? **Dinamik arka planlar** — Hava durumuna göre AI ile üretilmi? 6 farkl? görsel (güne?li, bulutlu, ya?murlu, karl?, f?rt?nal?, sisli)
-- ?? **Responsive** — Mobil, tablet ve masaüstünde sorunsuz çal???r
-- ? **H?zl?** — Vite ile build, Vercel'in CDN'i üzerinde da??t?l?yor
-- ??? **Hata yönetimi** — Geçersiz ?ehir, a? hatas? gibi durumlar için kullan?c? dostu mesajlar
-- ? **Eri?ilebilir** — `prefers-reduced-motion` deste?i, semantic HTML, ARIA etiketleri
+- **Sehir aramasi** - Dunyanin herhangi bir sehri icin anlik hava durumu
+- **Detayli veri** - Sicaklik, hissedilen, nem, ruzgar hizi
+- **Dinamik arka planlar** - Hava durumuna gore AI ile uretilmis 6 farkli gorsel (gunesli, bulutlu, yagmurlu, karli, firtinali, sisli)
+- **Responsive** - Mobil, tablet ve masaustunde sorunsuz calisir
+- **Hizli** - Vite ile build, Vercel CDN uzerinde dagitiliyor
+- **Hata yonetimi** - Gecersiz sehir, ag hatasi gibi durumlar icin kullanici dostu mesajlar
+- **Erisilebilir** - prefers-reduced-motion destegi, semantic HTML, ARIA etiketleri
 
 ---
 
-## Teknoloji Y???n?
+## Teknoloji Yigini
 
 | Katman | Teknoloji |
 |---|---|
 | Frontend | [React 18](https://react.dev) + [TypeScript](https://www.typescriptlang.org) |
 | Build Tool | [Vite 5](https://vitejs.dev) |
 | Stil | [Tailwind CSS 3](https://tailwindcss.com) |
-| UI Bile?enleri | [shadcn/ui](https://ui.shadcn.com) (Button, Input, Card, Badge) |
-| ?konlar | [lucide-react](https://lucide.dev) |
+| UI Bilesenleri | [shadcn/ui](https://ui.shadcn.com) (Button, Input, Card, Badge) |
+| Ikonlar | [lucide-react](https://lucide.dev) |
 | API | [OpenWeather](https://openweathermap.org/api) |
-| Görsel Üretimi | AI ile üretilmi? arka plan görselleri |
+| Gorsel Uretimi | AI ile uretilmis arka plan gorselleri |
 | Deploy | [Vercel](https://vercel.com) |
 | Versiyon Kontrol | Git + GitHub |
 
 ---
 
-## Klasör Yap?s?
+## Klasor Yapisi
 
 ```
 weather/
 ??? public/
-?   ??? backgrounds/          # AI ile üretilmi? hava durumu görselleri
+?   ??? backgrounds/          # AI ile uretilmis hava durumu gorselleri
 ?   ?   ??? clear.jpg
 ?   ?   ??? clouds.jpg
 ?   ?   ??? rain.jpg
@@ -51,23 +51,23 @@ weather/
 ?   ??? screenshot.png
 ??? src/
 ?   ??? components/
-?   ?   ??? ui/               # shadcn/ui bile?enleri
+?   ?   ??? ui/               # shadcn/ui bilesenleri
 ?   ?   ?   ??? button.tsx
 ?   ?   ?   ??? input.tsx
 ?   ?   ?   ??? card.tsx
 ?   ?   ?   ??? badge.tsx
 ?   ?   ??? background-shell.tsx  # Arka plan + overlay
-?   ?   ??? search-form.tsx       # ?ehir arama
-?   ?   ??? status-state.tsx      # Loading / error / idle durumlar?
-?   ?   ??? weather-card.tsx      # Hava durumu kart?
+?   ?   ??? search-form.tsx       # Sehir arama
+?   ?   ??? status-state.tsx      # Loading / error / idle durumlari
+?   ?   ??? weather-card.tsx      # Hava durumu karti
 ?   ?   ??? weather-details.tsx   # Detay metrikleri
 ?   ??? lib/
-?   ?   ??? api.ts            # OpenWeather API ça?r?lar?
-?   ?   ??? weather.ts        # Tip tan?mlar? + yard?mc? fonksiyonlar
-?   ?   ??? utils.ts          # cn() yard?mc? fonksiyonu
-?   ??? App.tsx               # Ana uygulama bile?eni
-?   ??? main.tsx              # Giri? noktas?
-?   ??? index.css             # Tailwind direktifleri + tema de?i?kenleri
+?   ?   ??? api.ts            # OpenWeather API cagrilari
+?   ?   ??? weather.ts        # Tip tanimlari + yardimci fonksiyonlar
+?   ?   ??? utils.ts          # cn() yardimci fonksiyonu
+?   ??? App.tsx               # Ana uygulama bileseni
+?   ??? main.tsx              # Giris noktasi
+?   ??? index.css             # Tailwind direktifleri + tema degiskenleri
 ??? .env.example
 ??? tailwind.config.ts
 ??? vite.config.ts
@@ -82,61 +82,61 @@ weather/
 
 - [Node.js](https://nodejs.org) 18+
 - [npm](https://www.npmjs.com) (Node ile birlikte gelir)
-- [OpenWeather API key](https://openweathermap.org/api) (ücretsiz)
+- [OpenWeather API key](https://openweathermap.org/api) (ucretsiz)
 
-### Ad?mlar
+### Adimlar
 
 ```bash
 # 1. Repo'yu klonla
 git clone https://github.com/znpdilek/weather-app.git
 cd weather-app
 
-# 2. Ba??ml?l?klar? kur
+# 2. Bagimliliklari kur
 npm install
 
-# 3. Ortam de?i?kenlerini ayarla
+# 3. Ortam degiskenlerini ayarla
 cp .env.example .env
-# .env dosyas?n? aç ve VITE_OPENWEATHER_API_KEY de?erini gir
+# .env dosyasini ac ve VITE_OPENWEATHER_API_KEY degerini gir
 
-# 4. Geli?tirme sunucusunu ba?lat
+# 4. Gelistirme sunucusunu baslat
 npm run dev
 ```
 
-Taray?c?da `http://localhost:5173` adresini aç.
+Tarayicida `http://localhost:5173` adresini ac.
 
-### Di?er komutlar
+### Diger komutlar
 
-| Komut | Aç?klama |
+| Komut | Aciklama |
 |---|---|
-| `npm run dev` | Geli?tirme sunucusunu ba?lat?r (HMR ile) |
-| `npm run build` | Production için optimize edilmi? build olu?turur |
-| `npm run preview` | Production build'i lokalde önizler |
+| `npm run dev` | Gelistirme sunucusunu baslatir (HMR ile) |
+| `npm run build` | Production icin optimize edilmis build olusturur |
+| `npm run preview` | Production build'i lokalde onizler |
 
 ---
 
 ## Mimari Kararlar
 
-### 1. Veri katman? ayr?m? (`src/lib/`)
+### 1. Veri katmani ayrimi (`src/lib/`)
 
-API ça?r?lar?, tip tan?mlar? ve veri normalizasyonu UI'dan ayr? bir katmana ta??nd?. `src/components/` sadece görsel sunumdan sorumlu.
+API cagrilari, tip tanimlari ve veri normalizasyonu UI'dan ayri bir katmana tasindi. `src/components/` sadece gorsel sunumdan sorumlu.
 
 ```
-src/lib/api.ts              ? OpenWeather'a HTTP istekleri
-src/lib/weather.ts          ? Tip tan?mlar? + normalizeWeatherData
-src/components/*            ? Sadece UI
+src/lib/api.ts              -> OpenWeather'a HTTP istekleri
+src/lib/weather.ts          -> Tip tanimlari + normalizeWeatherData
+src/components/*            -> Sadece UI
 ```
 
 ### 2. Veri normalizasyonu
 
-`OpenWeatherResponse` (API'den gelen ham JSON) ? `WeatherData` (UI için temizlenmi? ?ekil) dönü?ümü tek bir yerde (`normalizeWeatherData`) yap?l?yor. UI bile?enleri API'nin de?i?iminden etkilenmez.
+`OpenWeatherResponse` (API'den gelen ham JSON) -> `WeatherData` (UI icin temizlenmis sekil) donusumu tek bir yerde (`normalizeWeatherData`) yapiliyor. UI bilesenleri API'nin degisiminden etkilenmez.
 
-### 3. Hava durumu ? görsel e?leme
+### 3. Hava durumu -> gorsel eslemesi
 
-`getWeatherImage(condition)` fonksiyonu OpenWeather'?n `weather.main` alan?n? uygun arka plan görseline e?ler. Yeni bir hava durumu eklemek için sadece bu fonksiyon ve `public/backgrounds/` güncellenir.
+`getWeatherImage(condition)` fonksiyonu OpenWeather'in `weather.main` alanini uygun arka plan gorseline esler. Yeni bir hava durumu eklemek icin sadece bu fonksiyon ve `public/backgrounds/` guncellenir.
 
 ### 4. Tema sistemi
 
-Tüm renkler `src/index.css` içinde CSS de?i?kenleri olarak tan?mland? (HSL format?nda). Tek bir de?i?ikli?i de?i?tirerek tüm uygulaman?n temas?n? de?i?tirebilirsin.
+Tum renkler `src/index.css` icinde CSS degiskenleri olarak tanimlandi (HSL formatinda). Tek bir degiskeni degistirerek tum uygulamanin temasini degistirebilirsin.
 
 ```css
 :root {
@@ -146,27 +146,27 @@ Tüm renkler `src/index.css` içinde CSS de?i?kenleri olarak tan?mland? (HSL forma
 }
 ```
 
-### 5. Tip güvenli?i
+### 5. Tip guvenligi
 
-Tüm proje TypeScript ile yaz?ld?. API yan?tlar?, props, state — hepsi tipli. Build a?amas?nda (`tsc -b`) tip hatalar? yakalan?r.
+Tum proje TypeScript ile yazildi. API yanitlari, props, state - hepsi tipli. Build asamasinda (`tsc -b`) tip hatalari yakalanir.
 
 ---
 
 ## Deploy
 
-Proje [Vercel](https://vercel.com) üzerinde otomatik olarak deploy edilir. `main` branch'e her push i?leminden sonra Vercel otomatik build ba?lat?r.
+Proje [Vercel](https://vercel.com) uzerinde otomatik olarak deploy edilir. `main` branch'e her push isleminden sonra Vercel otomatik build baslatir.
 
-### Ortam de?i?kenleri
+### Ortam degiskenleri
 
-Vercel dashboard ? Project Settings ? Environment Variables:
+Vercel dashboard -> Project Settings -> Environment Variables:
 
-| Anahtar | De?er | Ortamlar |
+| Anahtar | Deger | Ortamlar |
 |---|---|---|
 | `VITE_OPENWEATHER_API_KEY` | OpenWeather API key | Production, Preview |
 
-### Build ayarlar?
+### Build ayarlari
 
-Vercel otomatik olarak Vite'? alg?lar:
+Vercel otomatik olarak Vite'i algilar:
 
 - **Framework preset:** Vite
 - **Build command:** `npm run build`
@@ -177,8 +177,8 @@ Vercel otomatik olarak Vite'? alg?lar:
 
 ## Lisans
 
-Bu proje e?itim amaçl? geli?tirilmi?tir.
+Bu proje egitim amacli gelistirilmistir.
 
 ---
 
-**Geli?tiren:** [@znpdilek](https://github.com/znpdilek)
+**Gelistiren:** [@znpdilek](https://github.com/znpdilek)
