@@ -43,3 +43,14 @@ export interface OpenWeatherResponse {
     if (key.includes("mist") || key.includes("fog") || key.includes("haze")) return "from-gray-300/30 via-slate-500/20 to-slate-900/90";
     return "from-zinc-500/30 via-slate-700/20 to-slate-950/90";
   }
+
+  export function getWeatherImage(condition?: string): string {
+    const key = (condition ?? "").toLowerCase();
+    if (key.includes("clear")) return "/backgrounds/clear.jpg";
+    if (key.includes("rain") || key.includes("drizzle")) return "/backgrounds/rain.jpg";
+    if (key.includes("thunder")) return "/backgrounds/thunder.jpg";
+    if (key.includes("snow")) return "/backgrounds/snow.jpg";
+    if (key.includes("mist") || key.includes("fog") || key.includes("haze")) return "/backgrounds/mist.jpg";
+    if (key.includes("cloud")) return "/backgrounds/clouds.jpg";
+    return "/backgrounds/clouds.jpg";
+  }
