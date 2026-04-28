@@ -45,6 +45,16 @@ Proje ayni zamanda ogrenim amacli:
 
 ## 4. Ozellikler (Functional Requirements)
 
+### F0 - Kullanici Authentication (Supabase Auth)
+- Yeni kullanici email + sifre ile **kayit** olabilir
+- Kayit sonrasi gelen email linki ile hesabini **dogrular**
+- Kayitli kullanici email + sifre ile **giris** yapabilir
+- Login olmamis kullanici **/login** sayfasina yonlendirilir (ProtectedRoute)
+- Header'da kullanici email'i ve **cikis** butonu gosterilir
+- Sifreler bcrypt ile hash'lenir (Supabase tarafinda otomatik)
+- JWT token'lar localStorage'da saklanir, otomatik yenilenir
+- Hatali giris denemeleri kullanici dostu mesajlarla bildirilir
+
 ### F1 - Sehir Arama
 - Kullanici bir input alanina sehir adi yazabilir
 - "Ara" butonuna tiklayarak veya Enter'a basarak arama tetiklenir
@@ -118,11 +128,48 @@ Proje ayni zamanda ogrenim amacli:
 | Build Tool | Vite | Hizli dev server, modern ESM bazli |
 | Stil | Tailwind CSS | Utility-first, hizli gelistirme |
 | UI Bilesenleri | shadcn/ui | Modern, accessible, copy-paste yaklasimi |
+| Routing | React Router 6 | Standart, declerative, nested routes |
+| Authentication | Supabase Auth | Email/password, JWT, hashing, RLS otomatik |
+| Database | Supabase (PostgreSQL) | Auth ile entegre, ucretsiz tier |
 | Ikonlar | lucide-react | Tutarli, hafif |
 | API | OpenWeather | Ucretsiz tier, genis sehir kapsami |
 | Gorsel Uretimi | AI image generation | Mentor istegi (Nano Banana yaklasimi) |
 | Hosting | Vercel | Otomatik deploy, ucretsiz tier, CDN |
 | Versiyon Kontrol | Git + GitHub | Standart |
+
+---
+
+## 6.1 Authentication ve Authorization Kavramlari
+
+### Authentication (Kimlik Dogrulama)
+
+**Tanim:** "Sen kimsin?" sorusunun cevabi. Kullanici kim oldugunu kanitlar.
+
+**Bu projede:** Email + sifre ile yapildi. Supabase Auth servisi kullanilarak:
+- Sifreler bcrypt ile hash'lenip saklanir (asla duz metin degil)
+- Login sonrasi JWT (JSON Web Token) uretilir
+- Token localStorage'da saklanir, otomatik yenilenir
+- Email dogrulama ile hesap aktiflestirilir
+
+### Authorization (Yetkilendirme)
+
+**Tanim:** "Ne yapabilirsin?" sorusunun cevabi. Authentication tamamlandiktan sonra kullanicinin hangi kaynaklara erisebilecegine karar verir.
+
+**Bu projede:**
+- Login olmamis kullanici sadece **/login** ve **/signup** sayfalarini gorebilir
+- Login olmus kullanici hava durumu sayfasina (**/**) erisebilir
+- ProtectedRoute bileseni bu kontrolu yapar
+- Ileride eklenebilecek RLS (Row Level Security) ile her kullanici sadece kendi verilerini gorebilir
+
+### Kullanilan Guvenlik Teknolojileri
+
+| Teknoloji | Amac |
+|---|---|
+| **bcrypt hashing** | Sifreler asla duz metin saklanmaz, geriye cevrilemez |
+| **JWT (JSON Web Token)** | Her istekte kim oldugunu kanitlar, server stateless calisir |
+| **HTTPS** | Tum auth verileri sifrelenmis kanaldan gecer |
+| **Email verification** | Hesabin gercek bir email adresine ait oldugunu garantiler |
+| **Row Level Security (RLS)** | Veritabani seviyesinde "her kullanici sadece kendi verisini gorur" garantisi |
 
 ---
 
@@ -160,6 +207,10 @@ Proje ayni zamanda ogrenim amacli:
 
 ## 8. Basari Kriterleri
 
+- [x] Kullanici email + sifre ile kayit olabiliyor (Supabase Auth)
+- [x] Email dogrulama ile hesap aktiflestiriliyor
+- [x] Login zorunlulugu var, korumali sayfalara erisim guvenli
+- [x] Cikis yapma calisiyor
 - [x] Kullanici bir sehir aramasi yapip hava durumunu gorebiliyor
 - [x] Sonuc ekrani tum gerekli verileri iceriyor
 - [x] Hata durumlarinda kullanici dostu mesaj gosteriliyor

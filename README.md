@@ -10,6 +10,9 @@ Sehir bazli, anlik hava durumu gosteren modern bir web uygulamasi. OpenWeather A
 
 ## Ozellikler
 
+- **Kullanici authentication** - Email + sifre ile kayit ve giris (Supabase Auth)
+- **Korumalı sayfalar** - Giris yapmamis kullanicilar otomatik olarak login sayfasina yonlendirilir
+- **Email dogrulama** - Kayit sonrasi gelen email linki ile hesap aktive edilir
 - **Sehir aramasi** - Dunyanin herhangi bir sehri icin anlik hava durumu
 - **Detayli veri** - Sicaklik, hissedilen, nem, ruzgar hizi
 - **Dinamik arka planlar** - Hava durumuna gore AI ile uretilmis 6 farkli gorsel (gunesli, bulutlu, yagmurlu, karli, firtinali, sisli)
@@ -28,6 +31,8 @@ Sehir bazli, anlik hava durumu gosteren modern bir web uygulamasi. OpenWeather A
 | Build Tool | [Vite 5](https://vitejs.dev) |
 | Stil | [Tailwind CSS 3](https://tailwindcss.com) |
 | UI Bilesenleri | [shadcn/ui](https://ui.shadcn.com) (Button, Input, Card, Badge) |
+| Routing | [React Router 6](https://reactrouter.com) |
+| Authentication | [Supabase Auth](https://supabase.com/auth) |
 | Ikonlar | [lucide-react](https://lucide.dev) |
 | API | [OpenWeather](https://openweathermap.org/api) |
 | Gorsel Uretimi | AI ile uretilmis arka plan gorselleri |
@@ -57,16 +62,25 @@ weather/
         card.tsx
         badge.tsx
       background-shell.tsx   # Arka plan + overlay
+      protected-route.tsx    # Auth kontrolu + yonlendirme
       search-form.tsx        # Sehir arama
       status-state.tsx       # Loading / error / idle durumlari
+      user-menu.tsx          # Kullanici email + cikis butonu
       weather-card.tsx       # Hava durumu karti
       weather-details.tsx    # Detay metrikleri
+    contexts/
+      auth-context.tsx       # Auth state'i tum uygulamada paylasir
+    pages/
+      home.tsx               # Korumali ana sayfa (hava durumu)
+      login.tsx              # Giris sayfasi
+      signup.tsx             # Kayit sayfasi
     lib/
       api.ts                 # OpenWeather API cagrilari
+      supabase.ts            # Supabase client yapilandirmasi
       weather.ts             # Tip tanimlari + yardimci fonksiyonlar
       utils.ts               # cn() yardimci fonksiyonu
-    App.tsx                  # Ana uygulama bileseni
-    main.tsx                 # Giris noktasi
+    App.tsx                  # Routing yapilandirmasi
+    main.tsx                 # Giris noktasi (Router + AuthProvider)
     index.css                # Tailwind direktifleri + tema degiskenleri
   .env.example
   tailwind.config.ts
@@ -163,6 +177,8 @@ Vercel dashboard -> Project Settings -> Environment Variables:
 | Anahtar | Deger | Ortamlar |
 |---|---|---|
 | `VITE_OPENWEATHER_API_KEY` | OpenWeather API key | Production, Preview |
+| `VITE_SUPABASE_URL` | Supabase proje URL'i | Production, Preview |
+| `VITE_SUPABASE_ANON_KEY` | Supabase anon (publishable) key | Production, Preview |
 
 ### Build ayarlari
 
