@@ -83,13 +83,77 @@ function normalize(value: string): string {
     .toLowerCase();
 }
 
-export async function searchCities(query: string, signal?: AbortSignal): Promise<CitySuggestion[]> {
+const SEARCH_CACHE = new Map<string, CitySuggestion[]>();
+const SEARCH_CACHE_MAX = 48;
+
+function cacheGet(key: string): CitySuggestion[] | undefined {
+  const hit = SEARCH_CACHE.get(key);
+  if (!hit) return undefined;
+  SEARCH_CACHE.delete(key);
+  SEARCH_CACHE.set(key, hit);
+  return hit;
+}
+
+function cacheSet(key: string, value: CitySuggestion[]) {
+  if (SEARCH_CACHE.has(key)) SEARCH_CACHE.delete(key);
+  SEARCH_CACHE.set(key, value);
+  while (SEARCH_CACHE.size > SEARCH_CACHE_MAX) {
+    const oldest = SEARCH_CACHE.keys().next().value;
+    if (oldest === undefined) break;
+    SEARCH_CACHE.delete(oldest);
+  }
+}
+
+const DISPLAY_LIMIT = 5;
+const POOL_LIMIT = 18;
+
+function buildMatches(data: PhotonResponse, normalizedQuery: string): CitySuggestion[] {
+  const seen = new Set<string>();
+  const matches: CitySuggestion[] = [];
+
+  for (const feature of data.features) {
+    const name = feature.properties.name ?? feature.properties.city;
+    if (!name) continue;
+
+    const normalizedName = normalize(name);
+    if (!normalizedName.startsWith(normalizedQuery)) continue;
+
+    const country = (feature.properties.countrycode ?? "").toUpperCase();
+    const key = `${normalizedName}_${country}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+
+    const [lon, lat] = feature.geometry.coordinates;
+    matches.push({
+      name,
+      country,
+      state: feature.properties.state,
+      lat,
+      lon,
+    });
+  }
+
+  return matches.slice(0, POOL_LIMIT);
+}
+
+export function filterCityPool(pool: CitySuggestion[], query: string): CitySuggestion[] {
+  const n = normalize(query.trim());
+  if (!n) return [];
+  return pool.filter((c) => normalize(c.name).startsWith(n)).slice(0, DISPLAY_LIMIT);
+}
+
+/** Tum aday havuzu; bellek onbellegi + Photon. Form daraltma icin tam listeyi kullanir. */
+export async function searchCitiesPool(query: string, signal?: AbortSignal): Promise<CitySuggestion[]> {
   const trimmed = query.trim();
   if (trimmed.length < 1) return [];
 
+  const cacheKey = normalize(trimmed);
+  const cached = cacheGet(cacheKey);
+  if (cached) return cached;
+
   const url = new URL(PHOTON_URL);
   url.searchParams.set("q", trimmed);
-  url.searchParams.set("limit", "20");
+  url.searchParams.set("limit", "30");
   url.searchParams.append("osm_tag", "place:city");
   url.searchParams.append("osm_tag", "place:town");
   url.searchParams.append("osm_tag", "place:village");
@@ -99,35 +163,15 @@ export async function searchCities(query: string, signal?: AbortSignal): Promise
     if (!response.ok) return [];
 
     const data = (await response.json()) as PhotonResponse;
-    const normalizedQuery = normalize(trimmed);
-
-    const seen = new Set<string>();
-    const matches: CitySuggestion[] = [];
-
-    for (const feature of data.features) {
-      const name = feature.properties.name ?? feature.properties.city;
-      if (!name) continue;
-
-      const normalizedName = normalize(name);
-      if (!normalizedName.startsWith(normalizedQuery)) continue;
-
-      const country = (feature.properties.countrycode ?? "").toUpperCase();
-      const key = `${normalizedName}_${country}`;
-      if (seen.has(key)) continue;
-      seen.add(key);
-
-      const [lon, lat] = feature.geometry.coordinates;
-      matches.push({
-        name,
-        country,
-        state: feature.properties.state,
-        lat,
-        lon,
-      });
-    }
-
-    return matches.slice(0, 5);
+    const matches = buildMatches(data, cacheKey);
+    cacheSet(cacheKey, matches);
+    return matches;
   } catch {
     return [];
   }
+}
+
+export async function searchCities(query: string, signal?: AbortSignal): Promise<CitySuggestion[]> {
+  const pool = await searchCitiesPool(query, signal);
+  return pool.slice(0, DISPLAY_LIMIT);
 }
