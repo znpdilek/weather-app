@@ -30,7 +30,7 @@ Proje ayni zamanda ogrenim amacli:
 
 ### Birincil hedefler
 
-1. Kullanici bir sehir adi girip 3 saniye icinde hava durumu bilgisini gorebilmeli
+1. Kullanici bir sehir adi girip hava durumu bilgisini gorebilmeli
 2. Arayuz responsive olmali (mobil, tablet, masaustu)
 3. Hata durumlarinda (gecersiz sehir, ag hatasi) kullaniciya acik mesajlar verilmeli
 4. Hava durumuna gore dinamik gorseller ile kullanici deneyimi zenginlestirilmeli

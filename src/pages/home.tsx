@@ -5,7 +5,7 @@ import { WeatherCard } from "@/components/weather-card";
 import { StatusState } from "@/components/status-state";
 import { BackgroundShell } from "@/components/background-shell";
 import { UserMenu } from "@/components/user-menu";
-import { fetchWeatherByCity } from "@/lib/api";
+import { fetchWeatherByCoords, type CitySuggestion } from "@/lib/api";
 import type { WeatherData } from "@/lib/weather";
 
 export function HomePage() {
@@ -13,12 +13,12 @@ export function HomePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleSearch = async (city: string) => {
+  const handleSelectCity = async (city: CitySuggestion) => {
     try {
       setLoading(true);
       setError(null);
-      const data = await fetchWeatherByCity(city);
-      setWeather(data);
+      const data = await fetchWeatherByCoords(city.lat, city.lon);
+      setWeather({ ...data, city: city.name, country: city.country });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Beklenmeyen bir hata olustu.";
       setError(message);
@@ -43,7 +43,7 @@ export function HomePage() {
         <UserMenu />
       </header>
 
-      <SearchForm onSearch={handleSearch} loading={loading} />
+      <SearchForm onSelectCity={handleSelectCity} loading={loading} />
 
       <main className="mt-6 flex w-full justify-center">
         {loading && <StatusState type="loading" />}
