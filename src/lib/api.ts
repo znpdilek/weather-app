@@ -1,4 +1,5 @@
 import { normalizeWeatherData, type OpenWeatherResponse, type WeatherData } from "@/lib/weather";
+import { STATIC_CITIES } from "@/data/static-cities";
 
 const WEATHER_URL = "https://api.openweathermap.org/data/2.5/weather";
 const PHOTON_URL = "https://photon.komoot.io/api";
@@ -77,10 +78,21 @@ interface PhotonResponse {
 }
 
 function normalize(value: string): string {
-  return value
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .toLowerCase();
+  let s = value.trim();
+  s = s.replace(/\u0130/g, "i").replace(/ı/g, "i");
+  s = s.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  s = s
+    .replace(/ğ/g, "g")
+    .replace(/Ğ/g, "g")
+    .replace(/ş/g, "s")
+    .replace(/Ş/g, "s")
+    .replace(/ç/g, "c")
+    .replace(/Ç/g, "c")
+    .replace(/ü/g, "u")
+    .replace(/Ü/g, "u")
+    .replace(/ö/g, "o")
+    .replace(/Ö/g, "o");
+  return s.toLowerCase();
 }
 
 const SEARCH_CACHE = new Map<string, CitySuggestion[]>();
@@ -136,13 +148,66 @@ function buildMatches(data: PhotonResponse, normalizedQuery: string): CitySugges
   return matches.slice(0, POOL_LIMIT);
 }
 
-export function filterCityPool(pool: CitySuggestion[], query: string): CitySuggestion[] {
-  const n = normalize(query.trim());
+function getLocalCityMatches(trimmed: string): CitySuggestion[] {
+  const n = normalize(trimmed);
   if (!n) return [];
-  return pool.filter((c) => normalize(c.name).startsWith(n)).slice(0, DISPLAY_LIMIT);
+
+  const candidates = STATIC_CITIES.filter((row) => normalize(row.name).startsWith(n));
+  candidates.sort((a, b) => a.name.localeCompare(b.name, "tr"));
+
+  const seen = new Set<string>();
+  const out: CitySuggestion[] = [];
+  for (const row of candidates) {
+    const key = `${normalize(row.name)}_${row.country}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push({
+      name: row.name,
+      country: row.country,
+      lat: row.lat,
+      lon: row.lon,
+      state: row.state,
+    });
+    if (out.length >= POOL_LIMIT) break;
+  }
+  return out;
 }
 
-/** Tum aday havuzu; bellek onbellegi + Photon. Form daraltma icin tam listeyi kullanir. */
+/** Aninda: yerel liste (ag yok). */
+export function getLocalCitySuggestionsSync(query: string): CitySuggestion[] {
+  return getLocalCityMatches(query.trim());
+}
+
+function mergeUnique(prefer: CitySuggestion[], extra: CitySuggestion[]): CitySuggestion[] {
+  const seen = new Set<string>();
+  const out: CitySuggestion[] = [];
+  for (const c of [...prefer, ...extra]) {
+    const key = `${normalize(c.name)}_${c.country}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    out.push(c);
+    if (out.length >= POOL_LIMIT) break;
+  }
+  return out;
+}
+
+const MIN_LOCAL_MATCHES_SKIP_REMOTE = 5;
+
+async function fetchPhotonMatches(trimmed: string, normalizedQuery: string, signal?: AbortSignal) {
+  const url = new URL(PHOTON_URL);
+  url.searchParams.set("q", trimmed);
+  url.searchParams.set("limit", "30");
+  url.searchParams.append("osm_tag", "place:city");
+  url.searchParams.append("osm_tag", "place:town");
+  url.searchParams.append("osm_tag", "place:village");
+
+  const response = await fetch(url.toString(), { signal });
+  if (!response.ok) return [];
+  const data = (await response.json()) as PhotonResponse;
+  return buildMatches(data, normalizedQuery);
+}
+
+/** Yerel liste yeterliyse Photon cagrilmaz (cok daha hizli). */
 export async function searchCitiesPool(query: string, signal?: AbortSignal): Promise<CitySuggestion[]> {
   const trimmed = query.trim();
   if (trimmed.length < 1) return [];
@@ -151,22 +216,23 @@ export async function searchCitiesPool(query: string, signal?: AbortSignal): Pro
   const cached = cacheGet(cacheKey);
   if (cached) return cached;
 
-  const url = new URL(PHOTON_URL);
-  url.searchParams.set("q", trimmed);
-  url.searchParams.set("limit", "30");
-  url.searchParams.append("osm_tag", "place:city");
-  url.searchParams.append("osm_tag", "place:town");
-  url.searchParams.append("osm_tag", "place:village");
+  const local = getLocalCityMatches(trimmed);
+  if (local.length >= MIN_LOCAL_MATCHES_SKIP_REMOTE) {
+    cacheSet(cacheKey, local);
+    return local;
+  }
 
   try {
-    const response = await fetch(url.toString(), { signal });
-    if (!response.ok) return [];
-
-    const data = (await response.json()) as PhotonResponse;
-    const matches = buildMatches(data, cacheKey);
-    cacheSet(cacheKey, matches);
-    return matches;
+    const remote = await fetchPhotonMatches(trimmed, cacheKey, signal);
+    const merged = mergeUnique(local, remote);
+    const result = merged.length > 0 ? merged : local;
+    cacheSet(cacheKey, result);
+    return result;
   } catch {
+    if (local.length > 0) {
+      cacheSet(cacheKey, local);
+      return local;
+    }
     return [];
   }
 }

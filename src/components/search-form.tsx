@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Loader2, MapPin, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { filterCityPool, searchCitiesPool, type CitySuggestion } from "@/lib/api";
+import { getLocalCitySuggestionsSync, searchCitiesPool, type CitySuggestion } from "@/lib/api";
 import { cn } from "@/lib/utils";
 
 interface SearchFormProps {
@@ -23,57 +23,39 @@ export function SearchForm({ onSelectCity, loading }: SearchFormProps) {
   const [searching, setSearching] = useState(false);
   const [activeIndex, setActiveIndex] = useState(-1);
   const containerRef = useRef<HTMLDivElement>(null);
-  const poolRef = useRef<CitySuggestion[]>([]);
-  const poolQueryRef = useRef("");
 
   useEffect(() => {
     const trimmed = query.trim();
     if (trimmed.length === 0) {
-      poolRef.current = [];
-      poolQueryRef.current = "";
       setSuggestions([]);
-      setSearching(false);
       setOpen(false);
+      setSearching(false);
       return;
     }
 
-    if (poolQueryRef.current && !trimmed.startsWith(poolQueryRef.current)) {
-      poolRef.current = [];
-      poolQueryRef.current = "";
+    const local = getLocalCitySuggestionsSync(trimmed);
+    if (local.length > 0) {
+      setSuggestions(local.slice(0, 5));
+      setOpen(true);
+      setActiveIndex(-1);
+    } else {
+      setSuggestions([]);
     }
 
-    const canInstant =
-      poolQueryRef.current.length > 0 &&
-      trimmed.length > poolQueryRef.current.length &&
-      trimmed.startsWith(poolQueryRef.current) &&
-      poolRef.current.length > 0;
-
-    if (canInstant) {
-      const instant = filterCityPool(poolRef.current, trimmed);
-      if (instant.length > 0) {
-        setSuggestions(instant);
-        setOpen(true);
-        setActiveIndex(-1);
-      }
+    const skipRemote = local.length >= 5;
+    if (skipRemote) {
+      setSearching(false);
+      return;
     }
 
-    const delay = trimmed.length <= 2 ? 85 : 130;
-
+    const delay = trimmed.length <= 2 ? 90 : 140;
     const controller = new AbortController();
+
     const timeoutId = window.setTimeout(async () => {
-      const instantNow =
-        poolQueryRef.current.length > 0 &&
-        trimmed.length > poolQueryRef.current.length &&
-        trimmed.startsWith(poolQueryRef.current)
-          ? filterCityPool(poolRef.current, trimmed)
-          : [];
-      const quietFetch = instantNow.length > 0;
-      if (!quietFetch) setSearching(true);
+      setSearching(true);
       try {
         const pool = await searchCitiesPool(trimmed, controller.signal);
         if (controller.signal.aborted) return;
-        poolRef.current = pool;
-        poolQueryRef.current = trimmed;
         setSuggestions(pool.slice(0, 5));
         setOpen(true);
         setActiveIndex(-1);
@@ -101,8 +83,6 @@ export function SearchForm({ onSelectCity, loading }: SearchFormProps) {
   const handleSelect = async (city: CitySuggestion) => {
     setQuery(city.name);
     setSuggestions([]);
-    poolRef.current = [];
-    poolQueryRef.current = "";
     setOpen(false);
     setActiveIndex(-1);
     await onSelectCity(city);
