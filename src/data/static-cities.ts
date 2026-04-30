@@ -1,6 +1,6 @@
 /**
  * Turkiye ve dunya sehirleri. Turkce isimler yalnizca \\uXXXX ile (ASCII kaynak)
- * — bazi editorler UTF-8 bozmasin diye.
+ * ï¿½ bazi editorler UTF-8 bozmasin diye.
  */
 
 export interface CitySeed {

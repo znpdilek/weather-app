@@ -21,6 +21,17 @@ Sehir bazli, anlik hava durumu gosteren modern bir web uygulamasi. OpenWeather A
 - **Hata yonetimi** - Gecersiz sehir, ag hatasi gibi durumlar icin kullanici dostu mesajlar
 - **Erisilebilir** - prefers-reduced-motion destegi, semantic HTML, ARIA etiketleri
 
+## Harita gorunumu (`/map`)
+
+- Sol menuden **Harita gorunumu** ile gidilir.
+- Varsayilan olarak **dunya** gorunumu (**Leaflet**, **OSM** karolari); konum izni istenmez.
+- **Ust arama** ile sehir secince harita `flyTo` ile odaklanir; ayni popover akisi acilir; hareket/zoom baslayinca cubuk gizlenir, durunca yeniden gorunur.
+- Haritaya **tiklanan nokta**: **OpenWeather Geo 1.0 reverse** ile yer adi / il (state) / ulke; **anlik hava** tiklanan nokta icin.
+- **Popover**: **[Wikipedia REST](https://en.wikipedia.org/api/rest_v1/)** ile once Turkce wiki, yoksa Ingilizce; ustte geri ok ve kapama (**X**) vardir. Masaustu sol menuyu basliktaki ok ile ac/kapa yapabilirsiniz.
+- Istege bagli: `src/lib/admin-boundaries.ts` icinde geoBoundaries ADM1 GeoJSON yardimcilari sakli; mevcut `/map` katmani tile + tiklama uzerinden calisir.
+
+**Kaynak notu:** Wikimedia kullanim kosullarina uyun; akademik/demo amacli uygun atlif yapin.
+
 ---
 
 ## Teknoloji Yigini
@@ -30,8 +41,9 @@ Sehir bazli, anlik hava durumu gosteren modern bir web uygulamasi. OpenWeather A
 | Frontend | [React 18](https://react.dev) + [TypeScript](https://www.typescriptlang.org) |
 | Build Tool | [Vite 5](https://vitejs.dev) |
 | Stil | [Tailwind CSS 3](https://tailwindcss.com) |
-| UI Bilesenleri | [shadcn/ui](https://ui.shadcn.com) (Button, Input, Card, Badge) |
-| Routing | [React Router 6](https://reactrouter.com) |
+| UI Bilesenleri | [shadcn/ui](https://ui.shadcn.com) — Button, Input, Card, Badge, Sidebar, Sheet, Separator, Popover |
+| Harita | [Leaflet](https://leafletjs.com), [react-leaflet](https://react-leaflet.js.org) |
+| Routing | [React Router 7](https://reactrouter.com) |
 | Authentication | [Supabase Auth](https://supabase.com/auth) |
 | Ikonlar | [lucide-react](https://lucide.dev) |
 | API | [OpenWeather](https://openweathermap.org/api) |
@@ -61,7 +73,13 @@ weather/
         input.tsx
         card.tsx
         badge.tsx
-      background-shell.tsx   # Arka plan + overlay
+        popover.tsx
+        sheet.tsx
+        separator.tsx
+        sidebar.tsx
+      layout/
+        main-layout.tsx      # Sidebar + Sheet (mobil) + Outlet
+      map-explorer.tsx       # Leaflet + GeoJSON + Popover
       protected-route.tsx    # Auth kontrolu + yonlendirme
       search-form.tsx        # Sehir arama
       status-state.tsx       # Loading / error / idle durumlari
@@ -71,11 +89,14 @@ weather/
     contexts/
       auth-context.tsx       # Auth state'i tum uygulamada paylasir
     pages/
-      home.tsx               # Korumali ana sayfa (hava durumu)
+      home.tsx               # Ana sayfa (hava arama + BackgroundShell)
+      map-view.tsx           # Harita sayfasi (lazy MapExplorer)
       login.tsx              # Giris sayfasi
       signup.tsx             # Kayit sayfasi
     lib/
-      api.ts                 # OpenWeather API cagrilari
+      api.ts                 # OpenWeather + arama + reverse geocoding
+      admin-boundaries.ts    # geoBoundaries ADM1 URL + cache
+      landmark.ts            # Wikipedia ozet API
       supabase.ts            # Supabase client yapilandirmasi
       weather.ts             # Tip tanimlari + yardimci fonksiyonlar
       utils.ts               # cn() yardimci fonksiyonu

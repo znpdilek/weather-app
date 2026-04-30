@@ -4,7 +4,6 @@ import { SearchForm } from "@/components/search-form";
 import { WeatherCard } from "@/components/weather-card";
 import { StatusState } from "@/components/status-state";
 import { BackgroundShell } from "@/components/background-shell";
-import { UserMenu } from "@/components/user-menu";
 import { fetchWeatherByCoords, type CitySuggestion } from "@/lib/api";
 import type { WeatherData } from "@/lib/weather";
 
@@ -30,7 +29,7 @@ export function HomePage() {
 
   return (
     <BackgroundShell condition={weather?.condition}>
-      <header className="mb-8 flex w-full max-w-3xl flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
+      <header className="mb-8 flex w-full max-w-3xl flex-col items-start gap-2">
         <div className="flex items-center gap-3">
           <div className="rounded-xl border border-border/70 bg-card/80 p-2">
             <CloudSun className="h-6 w-6 text-primary" />
@@ -40,7 +39,6 @@ export function HomePage() {
             <p className="text-sm text-muted-foreground">Sehir bazli anlik hava durumu takip uygulamasi</p>
           </div>
         </div>
-        <UserMenu />
       </header>
 
       <SearchForm onSelectCity={handleSelectCity} loading={loading} />

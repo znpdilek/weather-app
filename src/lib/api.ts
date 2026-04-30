@@ -20,6 +20,96 @@ function getApiKey(): string {
   return apiKey;
 }
 
+/** OpenWeather geo 1.0 reverse — ülke, il/eyalet ve yerleşim adı (tıklanan noktaya yakın). */
+export interface ReverseGeocodeDetail {
+  lat: number;
+  lon: number;
+  /** Genelde ilçe / kasaba / mahalle düzeyi */
+  name: string;
+  state?: string;
+  /** ISO alpha-2 */
+  country: string;
+}
+
+export async function reverseGeocodeDetail(
+  lat: number,
+  lon: number,
+  signal?: AbortSignal
+): Promise<ReverseGeocodeDetail> {
+  const apiKey = getApiKey();
+  const url = new URL("https://api.openweathermap.org/geo/1.0/reverse");
+  url.searchParams.set("lat", String(lat));
+  url.searchParams.set("lon", String(lon));
+  url.searchParams.set("limit", "1");
+  url.searchParams.set("appid", apiKey);
+
+  const response = await fetch(url.toString(), { signal });
+  if (!response.ok) {
+    throw new Error("Konumdan yer adi alinamadi.");
+  }
+  const rows = (await response.json()) as Array<{
+    name?: string;
+    state?: string;
+    country?: string;
+    lat?: number;
+    lon?: number;
+  }>;
+  const row = rows[0];
+  if (!row?.name || !row.country) {
+    throw new Error("Yer adı bulunamadi.");
+  }
+  return {
+    lat: row.lat ?? lat,
+    lon: row.lon ?? lon,
+    name: row.name,
+    state: row.state,
+    country: row.country.toUpperCase()
+  };
+}
+
+/** Eyalet / bolge sufikslerini sadelestirir */
+export function sanitizeAdminSuffix(label: string): string {
+  return label
+    .replace(/\s+Metropolitan Municipality\s*/i, "")
+    .replace(/\s+Metropolitan Borough\s*/i, "")
+    .replace(/\s+Province\s*/i, "")
+    .replace(/\s+Region\s*$/i, "")
+    .replace(/\s+Municipality\s*$/i, "")
+    .replace(/\s+County\s*$/i, "")
+    .replace(/\s+ili\s*$/i, "")
+    .trim();
+}
+
+/**
+ * UI basligi: TR'de il (Istanbul, Ankara), diger ulkelerde genelde yer adi (sehir kasabasi).
+ */
+export function headlineCityForMap(detail: ReverseGeocodeDetail): string {
+  const locality = sanitizeAdminSuffix(detail.name);
+  const state = detail.state?.trim() ? sanitizeAdminSuffix(detail.state) : "";
+  const country = detail.country.toUpperCase();
+  if (country === "TR" && state) return state;
+  return locality || state;
+}
+
+/** OpenWeather reverse geocoding: ulke kodu alpha-2 (or. TR, US) */
+export async function reverseGeocodeCountry(lat: number, lon: number): Promise<string> {
+  const apiKey = getApiKey();
+  const url = new URL("https://api.openweathermap.org/geo/1.0/reverse");
+  url.searchParams.set("lat", String(lat));
+  url.searchParams.set("lon", String(lon));
+  url.searchParams.set("limit", "1");
+  url.searchParams.set("appid", apiKey);
+
+  const response = await fetch(url.toString());
+  if (!response.ok) {
+    throw new Error("Konumdan ulke bilgisi alinamadi.");
+  }
+  const rows = (await response.json()) as Array<{ country?: string }>;
+  const code = rows[0]?.country;
+  if (!code) throw new Error("Ulke kodu bulunamadi.");
+  return code.toUpperCase();
+}
+
 export async function fetchWeatherByCity(city: string): Promise<WeatherData> {
   const apiKey = getApiKey();
   const url = new URL(WEATHER_URL);
