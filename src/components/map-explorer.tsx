@@ -222,82 +222,44 @@ export default function MapExplorer() {
             aria-hidden
           />
         </PopoverAnchor>
-        <PopoverContent
-          side="bottom"
-          align="center"
-          sideOffset={10}
-          collisionPadding={20}
-          avoidCollisions
-          className="w-[min(96vw,52rem)] max-w-none p-0 shadow-xl"
-          onOpenAutoFocus={(e) => e.preventDefault()}
-        >
-          <div className="flex items-center justify-between gap-2 border-b border-border/60 px-3 py-2 sm:px-4">
-            <Button type="button" variant="ghost" size="icon" aria-label="Kapat ve haritaya don" onClick={closePopover}>
-              <ArrowLeft className="h-5 w-5" />
-            </Button>
-            <span className="sr-only sm:not-sr-only sm:flex-1 sm:text-center sm:text-xs sm:font-medium sm:text-muted-foreground">
-              Bolge karti (Popover)
-            </span>
-            <Button type="button" variant="ghost" size="icon" aria-label="Kapat" onClick={closePopover}>
-              <XIcon className="h-5 w-5" />
-            </Button>
+        <PopoverContent className="w-80 p-0 overflow-hidden" side="right">
+        {!wikiLoading && wiki?.thumbnailUrl && (
+          <div className="w-full h-36 bg-muted">
+            <img 
+              src={wiki.thumbnailUrl} 
+              alt={`${regionTitle} tarihi yapı`} 
+              className="w-full h-full object-cover"
+            />
           </div>
+        )}
 
-          <div className="max-h-[min(78vh,40rem)] space-y-4 overflow-y-auto p-4 sm:p-5">
-            <div>
-              <h2 className="text-xl font-bold tracking-tight sm:text-2xl" id="map-popover-heading">
-                {regionTitle || "Yukleniyor..."}
-              </h2>
-              {regionSubtitle ? (
-                <p className="mt-1 text-sm text-muted-foreground">{regionSubtitle}</p>
-              ) : null}
-            </div>
-
-            <div className="overflow-hidden rounded-xl border border-border/60 bg-muted/30">
-              {wikiLoading && !wiki?.thumbnailUrl && (
-                <div className="flex aspect-[16/9] max-h-[min(38vh,22rem)] min-h-[11rem] items-center justify-center">
-                  <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-                </div>
-              )}
-              {!wikiLoading && wiki?.thumbnailUrl && (
-                <img
-                  src={wiki.thumbnailUrl}
-                  alt=""
-                  className="aspect-[16/9] max-h-[min(38vh,24rem)] w-full object-cover object-center"
-                />
-              )}
-              {!wikiLoading && !wiki?.thumbnailUrl && (
-                <div
-                  className="flex aspect-[16/9] max-h-[min(38vh,22rem)] min-h-[11rem] flex-col items-center justify-center gap-2 bg-muted/50 text-muted-foreground"
-                  aria-label="Wikipedia tarihi yapi gorseli yok"
-                >
-                  <Landmark className="h-10 w-10 opacity-60" aria-hidden />
-                </div>
-              )}
-            </div>
-
-            <Separator />
-
-            <div>
-              <h3 className="sr-only">Anlik hava</h3>
-              {weatherLoading && <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />}
-              {!weatherLoading && weather && (
-                <div className="space-y-4">
-                  <div className="flex flex-wrap items-baseline gap-2 gap-y-1">
-                    <span className="text-4xl font-bold tabular-nums">
-                      {weather.temperature}{"\u00b0"}
-                    </span>
-                    <span className="text-muted-foreground capitalize">{weather.description}</span>
+        <div className="grid gap-4 p-4">
+          <div className="space-y-1">
+            <h4 className="font-semibold leading-none">{regionTitle || "Yükleniyor..."}</h4>
+            <p className="text-sm text-muted-foreground">
+              {regionSubtitle || "Bölge bilgisi"}
+            </p>
+          </div>
+          
+          <div className="grid gap-2">
+            {!weatherLoading && weather ? (
+              <div className="flex items-center justify-between border-t border-border/50 pt-3 mt-1">
+                <span className="text-3xl font-bold tracking-tighter">
+                  {weather.temperature}{"\u00b0"}
+                </span>
+                <div className="text-right">
+                  <p className="text-sm font-medium capitalize">{weather.description}</p>
+                  <div className="scale-75 origin-right mt-1">
+                    <WeatherDetails data={weather} />
                   </div>
-                  <WeatherDetails data={weather} />
                 </div>
-              )}
-              {!weatherLoading && !weather && (
-                <p className="text-sm text-muted-foreground">Hava verisi alinamadi.</p>
-              )}
-            </div>
+              </div>
+            ) : (
+              <p className="text-xs text-muted-foreground">Hava verisi alınıyor...</p>
+            )}
           </div>
-        </PopoverContent>
+        </div>
+      </PopoverContent>
       </Popover>
 
       <div
@@ -340,9 +302,7 @@ export default function MapExplorer() {
         <MapClickProbe onPick={handleMapPick} />
       </MapContainer>
 
-      <p className="pointer-events-none absolute bottom-3 left-1/2 z-[400] max-w-[min(92vw,30rem)] -translate-x-1/2 rounded-lg border border-border/60 bg-background/90 px-3 py-2 text-center text-xs text-muted-foreground shadow-sm backdrop-blur-sm">
-        Detay karti shadcn Popover (modal kapali); tiklama noktasina yapiskan akis, kenar icin pozisyon otomatik ayarlanir. Fotograf ve hava.
-      </p>
+    
     </div>
   );
 }
