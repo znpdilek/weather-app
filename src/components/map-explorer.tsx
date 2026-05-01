@@ -5,13 +5,18 @@ import {
   Loader2,
   X as XIcon
 } from "lucide-react";
-import { createPortal } from "react-dom";
 import { MapContainer, TileLayer, useMap, useMapEvents } from "react-leaflet";
 import countries from "i18n-iso-countries";
 import enLocale from "i18n-iso-countries/langs/en.json";
-import { type CitySuggestion, fetchWeatherByCoords, headlineCityForMap, reverseGeocodeDetail } from "@/lib/api";
+import {
+  type CitySuggestion,
+  fetchWeatherByCoords,
+  headlineCityForMap,
+  reverseGeocodeDetail
+} from "@/lib/api";
 import type { WeatherData } from "@/lib/weather";
 import { fetchLandmarkSummary } from "@/lib/landmark";
+import { Popover, PopoverAnchor, PopoverContent } from "@/components/ui/popover";
 import { Separator } from "@/components/ui/separator";
 import { WeatherDetails } from "@/components/weather-details";
 import { SearchForm } from "@/components/search-form";
@@ -130,7 +135,8 @@ function MapInteractionSearchBridge({
 }
 
 export default function MapExplorer() {
-  const [detailOpen, setDetailOpen] = useState(false);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+  const [anchor, setAnchor] = useState({ x: 0, y: 0 });
   const [regionTitle, setRegionTitle] = useState("");
   const [regionSubtitle, setRegionSubtitle] = useState("");
   const [weather, setWeather] = useState<WeatherData | null>(null);
@@ -145,72 +151,58 @@ export default function MapExplorer() {
   } | null>(null);
   const programmaticMoveRef = useRef(false);
 
-  const closeDetail = useCallback(() => {
-    setDetailOpen(false);
+  const closePopover = useCallback(() => {
+    setPopoverOpen(false);
   }, []);
 
-  useEffect(() => {
-    if (!detailOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") closeDetail();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [detailOpen, closeDetail]);
-
-  useEffect(() => {
-    if (!detailOpen) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [detailOpen]);
-
-  const openPlaceDetail = useCallback(async (lat: number, lon: number) => {
-    setDetailOpen(true);
-    setRegionTitle("");
-    setRegionSubtitle("");
-    setWeather(null);
-    setWiki(null);
-    setWeatherLoading(true);
-    setWikiLoading(true);
-
-    try {
-      const detail = await reverseGeocodeDetail(lat, lon);
-      const countryName = countries.getName(detail.country, "en") ?? detail.country;
-      const headline = headlineCityForMap(detail);
-      setRegionTitle(headline);
-      setRegionSubtitle(countryName);
-
-      const [w, land] = await Promise.all([
-        fetchWeatherByCoords(lat, lon),
-        fetchLandmarkSummary(headline, { countryNameHint: countryName })
-      ]);
-      setWeather({ ...w, city: headline, country: detail.country });
-      setWiki(land);
-    } catch {
-      setRegionTitle("Konum algilanamadi");
-      setRegionSubtitle("Karada baska bir nokta deneyin.");
+  const openPlaceDetail = useCallback(
+    async (lat: number, lon: number, anchorX: number, anchorY: number) => {
+      setAnchor({ x: anchorX, y: anchorY });
+      setPopoverOpen(true);
+      setRegionTitle("");
+      setRegionSubtitle("");
       setWeather(null);
       setWiki(null);
-    } finally {
-      setWeatherLoading(false);
-      setWikiLoading(false);
-    }
-  }, []);
+      setWeatherLoading(true);
+      setWikiLoading(true);
+
+      try {
+        const detail = await reverseGeocodeDetail(lat, lon);
+        const countryName = countries.getName(detail.country, "en") ?? detail.country;
+        const headline = headlineCityForMap(detail);
+        setRegionTitle(headline);
+        setRegionSubtitle(countryName);
+
+        const [w, land] = await Promise.all([
+          fetchWeatherByCoords(lat, lon),
+          fetchLandmarkSummary(headline, { countryNameHint: countryName })
+        ]);
+        setWeather({ ...w, city: headline, country: detail.country });
+        setWiki(land);
+      } catch {
+        setRegionTitle("Konum algilanamadi");
+        setRegionSubtitle("Karada baska bir nokta deneyin.");
+        setWeather(null);
+        setWiki(null);
+      } finally {
+        setWeatherLoading(false);
+        setWikiLoading(false);
+      }
+    },
+    []
+  );
 
   const onFlightEnded = useCallback(
     (lat: number, lon: number) => {
-      void openPlaceDetail(lat, lon);
+      void openPlaceDetail(lat, lon, window.innerWidth / 2, window.innerHeight * 0.42);
       setFlyTo(null);
     },
     [openPlaceDetail]
   );
 
   const handleMapPick = useCallback(
-    (lat: number, lon: number, _sx: number, _sy: number) => {
-      void openPlaceDetail(lat, lon);
+    (lat: number, lon: number, screenX: number, screenY: number) => {
+      void openPlaceDetail(lat, lon, screenX, screenY);
     },
     [openPlaceDetail]
   );
@@ -220,41 +212,40 @@ export default function MapExplorer() {
     setFlyTo({ lat: _city.lat, lon: _city.lon, id: Date.now() });
   }, []);
 
-  const detailPanel =
-    detailOpen &&
-    createPortal(
-      <div
-        className="fixed inset-0 z-[6000] flex items-center justify-center p-3 sm:p-6 md:p-8"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="map-detail-heading"
-      >
-        <button
-          type="button"
-          tabIndex={-1}
-          className="absolute inset-0 bg-black/55 backdrop-blur-[2px]"
-          aria-label="Kapat"
-          onClick={closeDetail}
-        />
-        <div
-          className="relative z-10 flex max-h-[min(92vh,52rem)] w-full max-w-[52rem] flex-col overflow-y-auto rounded-2xl border border-border bg-card shadow-2xl"
-          onClick={(e) => e.stopPropagation()}
+  return (
+    <div className="relative flex min-h-[min(720px,calc(100dvh-4.5rem))] flex-1 flex-col md:min-h-[calc(100dvh-4.5rem)]">
+      <Popover modal={false} open={popoverOpen} onOpenChange={setPopoverOpen}>
+        <PopoverAnchor asChild>
+          <span
+            className="pointer-events-none fixed block h-px w-px opacity-0"
+            style={{ left: anchor.x, top: anchor.y }}
+            aria-hidden
+          />
+        </PopoverAnchor>
+        <PopoverContent
+          side="bottom"
+          align="center"
+          sideOffset={10}
+          collisionPadding={20}
+          avoidCollisions
+          className="w-[min(96vw,52rem)] max-w-none p-0 shadow-xl"
+          onOpenAutoFocus={(e) => e.preventDefault()}
         >
-          <div className="sticky top-0 z-10 flex items-center justify-between gap-2 border-b border-border/60 bg-card/98 px-3 py-2 backdrop-blur-sm sm:px-4">
-            <Button type="button" variant="ghost" size="icon" aria-label="Haritaya don" onClick={closeDetail}>
+          <div className="flex items-center justify-between gap-2 border-b border-border/60 px-3 py-2 sm:px-4">
+            <Button type="button" variant="ghost" size="icon" aria-label="Kapat ve haritaya don" onClick={closePopover}>
               <ArrowLeft className="h-5 w-5" />
             </Button>
-            <span className="sr-only md:not-sr-only md:flex-1 md:text-center md:text-xs md:font-medium md:text-muted-foreground">
-              Bolge ozeti
+            <span className="sr-only sm:not-sr-only sm:flex-1 sm:text-center sm:text-xs sm:font-medium sm:text-muted-foreground">
+              Bolge karti (Popover)
             </span>
-            <Button type="button" variant="ghost" size="icon" aria-label="Kapat" onClick={closeDetail}>
+            <Button type="button" variant="ghost" size="icon" aria-label="Kapat" onClick={closePopover}>
               <XIcon className="h-5 w-5" />
             </Button>
           </div>
 
-          <div className="space-y-4 p-4 sm:p-6">
+          <div className="max-h-[min(78vh,40rem)] space-y-4 overflow-y-auto p-4 sm:p-5">
             <div>
-              <h2 id="map-detail-heading" className="text-xl font-bold tracking-tight sm:text-2xl">
+              <h2 className="text-xl font-bold tracking-tight sm:text-2xl" id="map-popover-heading">
                 {regionTitle || "Yukleniyor..."}
               </h2>
               {regionSubtitle ? (
@@ -264,7 +255,7 @@ export default function MapExplorer() {
 
             <div className="overflow-hidden rounded-xl border border-border/60 bg-muted/30">
               {wikiLoading && !wiki?.thumbnailUrl && (
-                <div className="flex aspect-[16/9] max-h-[min(42vh,24rem)] min-h-[12rem] items-center justify-center">
+                <div className="flex aspect-[16/9] max-h-[min(38vh,22rem)] min-h-[11rem] items-center justify-center">
                   <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
                 </div>
               )}
@@ -272,12 +263,12 @@ export default function MapExplorer() {
                 <img
                   src={wiki.thumbnailUrl}
                   alt=""
-                  className="aspect-[16/9] max-h-[min(42vh,26rem)] w-full object-cover object-center"
+                  className="aspect-[16/9] max-h-[min(38vh,24rem)] w-full object-cover object-center"
                 />
               )}
               {!wikiLoading && !wiki?.thumbnailUrl && (
                 <div
-                  className="flex aspect-[16/9] max-h-[min(42vh,24rem)] min-h-[12rem] flex-col items-center justify-center gap-2 bg-muted/50 text-muted-foreground"
+                  className="flex aspect-[16/9] max-h-[min(38vh,22rem)] min-h-[11rem] flex-col items-center justify-center gap-2 bg-muted/50 text-muted-foreground"
                   aria-label="Wikipedia tarihi yapi gorseli yok"
                 >
                   <Landmark className="h-10 w-10 opacity-60" aria-hidden />
@@ -306,14 +297,8 @@ export default function MapExplorer() {
               )}
             </div>
           </div>
-        </div>
-      </div>,
-      document.body
-    );
-
-  return (
-    <div className="relative flex min-h-[min(720px,calc(100dvh-4.5rem))] flex-1 flex-col md:min-h-[calc(100dvh-4.5rem)]">
-      {detailPanel}
+        </PopoverContent>
+      </Popover>
 
       <div
         className={`pointer-events-none absolute left-1/2 top-3 z-[450] w-[min(96vw,28rem)] -translate-x-1/2 transition-opacity duration-200 ${
@@ -355,8 +340,8 @@ export default function MapExplorer() {
         <MapClickProbe onPick={handleMapPick} />
       </MapContainer>
 
-      <p className="pointer-events-none absolute bottom-3 left-1/2 z-[400] max-w-[min(92vw,28rem)] -translate-x-1/2 rounded-lg border border-border/60 bg-background/90 px-3 py-2 text-center text-xs text-muted-foreground shadow-sm backdrop-blur-sm">
-        Yukaridan sehir ara veya yaklastirip tikla. Panel ortada tam gorunur. Wikipedia metni yok; tarihi yapi foto (varsa) ve ani hava bilgisi.
+      <p className="pointer-events-none absolute bottom-3 left-1/2 z-[400] max-w-[min(92vw,30rem)] -translate-x-1/2 rounded-lg border border-border/60 bg-background/90 px-3 py-2 text-center text-xs text-muted-foreground shadow-sm backdrop-blur-sm">
+        Detay karti shadcn Popover (modal kapali); tiklama noktasina yapiskan akis, kenar icin pozisyon otomatik ayarlanir. Fotograf ve hava.
       </p>
     </div>
   );
